@@ -5,8 +5,7 @@ import {
   Box,
   Button,
   FormControl,
-  FormControlLabel,
-  FormLabel, InputAdornment,
+  InputAdornment,
   InputLabel, MenuItem, OutlinedInput,
   Select,
   TextField
@@ -49,7 +48,7 @@ function App() {
       <Box
         component="form"
         sx={{
-          '& .MuiTextField-root': { m: 1, width: '50ch' },
+          '& .MuiTextField-root': { m: 1, width: '70ch' },
         }}
         noValidate
         autoComplete="off"
@@ -68,18 +67,18 @@ function App() {
         />
         <div>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateTimePicker/>
-            <DateTimePicker/>
+            <DateTimePicker label="Check In"/>
+            <DateTimePicker label="Check Out"/>
           </LocalizationProvider>
         </div>
         <FormControl sx={{ m: 1, minWidth: 300 }}>
+          <InputLabel id="demo-simple-select-label">Tipo Alojamiento</InputLabel>
           <Select
-            labelId="demo-simple-select-autowidth-label"
-            id="demo-simple-select-autowidth"
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
             value={housingType}
             onChange={handleHousingType}
-            autoWidth
-            label="Opción de Pago"
+            label="Tipo Alojamiento"
           >
             {housingTypes.map(type => (
                 <MenuItem key={type.value} value={type.value}>{type.text}</MenuItem>
@@ -87,13 +86,13 @@ function App() {
             )}
           </Select>
         </FormControl>
-        <FormControl sx={{ m: 1, minWidth: 300 }}>
+        <FormControl sx={{m: 1, minWidth: 300}}>
+          <InputLabel id="demo-simple-select-label">Opción de Pago</InputLabel>
           <Select
-            labelId="demo-simple-select-autowidth-label"
-            id="demo-simple-select-autowidth"
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
             value={paymentOption}
             onChange={handlePaymentOption}
-            autoWidth
             label="Opción de Pago"
           >
             {paymentOptions.map(option => (
@@ -105,6 +104,7 @@ function App() {
         <div>
           {paymentOption === PaymentOptions.Signed && (
             <FormControl sx={{ m: 1 }}>
+              <InputLabel id="demo-simple-select-label">Seña</InputLabel>
               <OutlinedInput
                 id="outlined-adornment-amount"
                 startAdornment={<InputAdornment position="start">$</InputAdornment>}
@@ -113,6 +113,7 @@ function App() {
             </FormControl>
           )}
           <FormControl sx={{ m: 1 }}>
+            <InputLabel id="demo-simple-select-label">{paymentOption === PaymentOptions.NoPaid ? 'Monto Aprox.' : 'Monto Total'}</InputLabel>
             <OutlinedInput
               id="outlined-adornment-amount"
               startAdornment={<InputAdornment position="start">$</InputAdornment>}
@@ -120,7 +121,7 @@ function App() {
             />
           </FormControl>
         </div>
-        <Button color="success" variant="outlined">Guardar</Button>
+        <Box sx={{mt: 2}}><Button color="success" variant="outlined">Guardar</Button></Box>
       </Box>
     </>
   )
