@@ -6,23 +6,29 @@ import {
   Button,
   FormControl,
   InputAdornment,
-  InputLabel, MenuItem, OutlinedInput,
+  InputLabel,
+  MenuItem,
+  OutlinedInput,
   Select,
   TextField
 } from "@mui/material";
 import React, {useState} from "react";
+import {PaymentOptions} from "./types/PaymentOptions.ts";
+import {HousingTypes} from "./types/HousingTypes.ts";
+import {BookingRequest} from "./interfaces/BookingRequest.ts";
+import {useBooking} from "./store.tsx";
 
 function App() {
-  enum PaymentOptions {
-    Paid = 'paid',
-    NoPaid = 'noPaid',
-    Signed = 'signed'
-  }
-  enum HousingTypes {
-    Apartment = 'apartment',
-    Room = 'room',
-    Hostel = 'hostel'
-  }
+  const [booking, setBooking] = useState<BookingRequest>({
+    name: '',
+    origin: '',
+    checkIn: '',
+    checkOut: '',
+    housingType: HousingTypes.Room,
+    paymentOption: PaymentOptions.NoPaid,
+    totalAmount: 0,
+    partialAmount: 0
+  })
   const paymentOptions = [
     {text: 'Está Pago', value: PaymentOptions.Paid},
     {text: 'Pago en Hotel', value: PaymentOptions.NoPaid},
@@ -33,15 +39,8 @@ function App() {
     {text: 'Habitación', value: HousingTypes.Room},
     {text: 'Hostel', value: HousingTypes.Hostel}
   ]
-
-  const [paymentOption, setPaymentOption] = useState('')
-  const [housingType, setHousingType] = useState('')
-  const handlePaymentOption = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    setPaymentOption((evt.target as HTMLInputElement).value)
-  }
-  const handleHousingType = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    setHousingType((evt.target as HTMLInputElement).value)
-  }
+  const addBooking = useBooking(state => state.addBooking)
+  const bookingList = useBooking(state => state.bookings)
 
   return (
     <>
@@ -58,17 +57,33 @@ function App() {
           placeholder="Nombre Lugar"
           multiline
           maxRows={4}
+          value={booking.name}
+          onChange={(evt) => {
+            setBooking({...booking, name: evt.target.value})
+          }}
         />
         <TextField
-          id="outlined-multiline-flexible"
+          id="outlined-multiline-flexible-2"
           placeholder="¿Donde reservaste?"
           multiline
           maxRows={4}
+          value={booking.origin}
+          onChange={(evt) => setBooking({...booking, origin: evt.target.value})}
         />
         <div>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateTimePicker label="Check In"/>
-            <DateTimePicker label="Check Out"/>
+            <DateTimePicker
+              value={booking.checkIn}
+              label="Check In"
+              onChange={(evt) => {
+                setBooking({...booking, checkIn: evt.$d.toString()})
+              }}
+            />
+            <DateTimePicker
+              value={booking.checkOut}
+              label="Check Out"
+              onChange={(evt) => setBooking({...booking, checkOut: evt.$d.toString()})}
+            />
           </LocalizationProvider>
         </div>
         <FormControl sx={{ m: 1, minWidth: 300 }}>
@@ -76,8 +91,8 @@ function App() {
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
-            value={housingType}
-            onChange={handleHousingType}
+            value={booking.housingType}
+            onChange={(e) => setBooking({...booking, housingType: e.target.value})}
             label="Tipo Alojamiento"
           >
             {housingTypes.map(type => (
@@ -91,8 +106,8 @@ function App() {
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
-            value={paymentOption}
-            onChange={handlePaymentOption}
+            value={booking.paymentOption}
+            onChange={e => setBooking({...booking, paymentOption: e.target.value})}
             label="Opción de Pago"
           >
             {paymentOptions.map(option => (
@@ -102,26 +117,47 @@ function App() {
           </Select>
         </FormControl>
         <div>
-          {paymentOption === PaymentOptions.Signed && (
+          {booking.paymentOption === PaymentOptions.Signed && (
             <FormControl sx={{ m: 1 }}>
               <InputLabel id="demo-simple-select-label">Seña</InputLabel>
               <OutlinedInput
                 id="outlined-adornment-amount"
+                value={booking.partialAmount}
+                type="number"
                 startAdornment={<InputAdornment position="start">$</InputAdornment>}
                 label="Seña"
+                onChange={(e) => setBooking({...booking, partialAmount: Number(e.target.value)})}
               />
             </FormControl>
           )}
           <FormControl sx={{ m: 1 }}>
-            <InputLabel id="demo-simple-select-label">{paymentOption === PaymentOptions.NoPaid ? 'Monto Aprox.' : 'Monto Total'}</InputLabel>
+            <InputLabel id="demo-simple-select-label">{booking.paymentOption === PaymentOptions.NoPaid ? 'Monto Aprox.' : 'Monto Total'}</InputLabel>
             <OutlinedInput
               id="outlined-adornment-amount"
+              value={booking.totalAmount}
+              type="number"
               startAdornment={<InputAdornment position="start">$</InputAdornment>}
-              label={paymentOption === PaymentOptions.NoPaid ? 'Monto Aprox.' : 'Monto Total'}
+              label={booking.paymentOption === PaymentOptions.NoPaid ? 'Monto Aprox.' : 'Monto Total'}
+              onChange={(e) => setBooking({...booking, totalAmount: Number(e.target.value)})}
             />
           </FormControl>
         </div>
-        <Box sx={{mt: 2}}><Button color="success" variant="outlined">Guardar</Button></Box>
+        <Box sx={{mt: 2}}>
+          <Button
+            color="success"
+            variant="outlined"
+            onClick={() => addBooking(booking)}
+          >
+            Guardar
+          </Button>
+        </Box>
+      </Box>
+      <Box sx={{mt: 2}}>
+        <ul>
+          {bookingList.map(booking =>
+            (<li key={booking.name}>{booking.name}</li>)
+          )}
+        </ul>
       </Box>
     </>
   )
