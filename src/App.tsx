@@ -5,7 +5,7 @@ import {
   Box,
   Button,
   Card,
-  FormControl,
+  FormControl, Grid, IconButton,
   InputAdornment,
   InputLabel,
   MenuItem,
@@ -18,6 +18,7 @@ import {PaymentOptions} from "./types/PaymentOptions.ts";
 import {HousingTypes} from "./types/HousingTypes.ts";
 import {BookingRequest} from "./interfaces/BookingRequest.ts";
 import {useBooking} from "./store.tsx";
+import {Edit} from "@mui/icons-material";
 
 function App() {
   const cleanBooking: BookingRequest = {
@@ -32,6 +33,8 @@ function App() {
     signedAmount: 0
   }
   const [booking, setBooking] = useState<BookingRequest>(cleanBooking)
+  const [index, setIndex] = useState(-1)
+
   const paymentOptions = [
     {text: 'Está Pago', value: PaymentOptions.Paid},
     {text: 'Pago en Hotel', value: PaymentOptions.NoPaid},
@@ -42,12 +45,7 @@ function App() {
     {text: 'Habitación', value: HousingTypes.Room},
     {text: 'Hostel', value: HousingTypes.Hostel}
   ]
-  const addBooking = useBooking(state => state.addBooking)
   const bookingList = useBooking(state => state.bookings)
-  const save = () => {
-    addBooking(booking)
-    setBooking(cleanBooking)
-  }
 
   const getPaidTotal = useMemo(() => {
     let total = 0
@@ -65,13 +63,26 @@ function App() {
     bookingList.forEach(booking => {
       if (booking.paymentOption === PaymentOptions.NoPaid)
         total += booking.totalAmount
-      if (booking.paymentOption === PaymentOptions.Signed)
+      if (booking.paymentOption === PaymentOptions.Signed && booking.signedAmount)
         total += (booking.totalAmount - booking.signedAmount)
     })
     return total
   }, [bookingList])
 
   const getTotal = useMemo(() => getPaidTotal + getNoPaidTotal, [getPaidTotal, getNoPaidTotal])
+
+  const save = () => {
+    index.valueOf() > -1
+      ? updateBooking(booking, index)
+      : addBooking(booking)
+    setBooking(cleanBooking)
+  }
+  const addBooking = useBooking(state => state.addBooking)
+  const updateBooking = useBooking(state => state.updateBooking)
+  const editBooking = (booking: BookingRequest) => {
+    setIndex(bookingList.indexOf(booking))
+    setBooking(booking)
+  }
 
   return (
     <>
@@ -82,22 +93,37 @@ function App() {
         <Box sx={{mt: 2}}>
           <ul>
             {bookingList.map(booking =>
-              (<li key={booking.name}>{booking.checkIn} al {booking.checkOut}: {booking.name}</li>)
+              (<li key={booking.name}>
+                <Grid container spacing={2}>
+                  <Grid item xs={6}>
+                    {booking.checkIn} al {booking.checkOut}: {booking.name}
+                  </Grid>
+                  <Grid item xs={2}>
+                    <IconButton
+                      onClick={() => editBooking(booking)}
+                    >
+                      <Edit />
+                    </IconButton>
+                  </Grid>
+                </Grid>
+              </li>)
             )}
           </ul>
         </Box>
-        <Box sx={{ my: 3 }}>
-          Gasto total
-          <p>$ {getTotal}</p>
-        </Box>
-        <Box sx={{ mt: 4, }}>
-          Se Pagó
-          <p>$ {getPaidTotal}</p>
-        </Box>
-        <Box sx={{ my: 3 }}>
-          Resta pagar
-          <p>$ {getNoPaidTotal}</p>
-        </Box>
+        <Grid container spacing={2}>
+          <Grid item xs={2}>
+            Gasto total
+            <p>$ {getTotal}</p>
+          </Grid>
+          <Grid item xs={2}>
+            Se Pagó
+            <p>$ {getPaidTotal}</p>
+          </Grid>
+          <Grid item xs={2}>
+            Resta pagar
+            <p>$ {getNoPaidTotal}</p>
+          </Grid>
+        </Grid>
       </Card>
       <Card  sx={{mt: 2}}>
         <Box
