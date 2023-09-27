@@ -65,6 +65,9 @@ export function BookingBoard() {
         <Box sx={{ justifyContent: "center" }}>
           Mis reservas
         </Box>
+        { bookingList.length === 0 &&
+          <p>No tenés ninguna reserva.</p>
+        }
         <Box sx={{mt: 2}}>
           <ul>
             {bookingList.map(booking =>
@@ -78,7 +81,6 @@ export function BookingBoard() {
                       onClick={() => editBooking(booking)}
                     >
                       <Edit />
-
                     </IconButton>
                     <IconButton onClick={() => deleteBooking(booking)}>
                       <Delete />
@@ -89,20 +91,22 @@ export function BookingBoard() {
             )}
           </ul>
         </Box>
-        <Grid container spacing={2}>
-          <Grid item xs={2}>
-            Gasto total
-            <p>$ {getTotal}</p>
+        { bookingList.length > 0 &&
+          <Grid container spacing={2}>
+            <Grid item xs={2}>
+              Gasto total
+              <p>$ {getTotal}</p>
+            </Grid>
+            <Grid item xs={2}>
+              Se Pagó
+              <p>$ {getPaidTotal}</p>
+            </Grid>
+            <Grid item xs={2}>
+              Resta pagar
+              <p>$ {getNoPaidTotal}</p>
+            </Grid>
           </Grid>
-          <Grid item xs={2}>
-            Se Pagó
-            <p>$ {getPaidTotal}</p>
-          </Grid>
-          <Grid item xs={2}>
-            Resta pagar
-            <p>$ {getNoPaidTotal}</p>
-          </Grid>
-        </Grid>
+        }
       </Card>
 
       <BookingForm

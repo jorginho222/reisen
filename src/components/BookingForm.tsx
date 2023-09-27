@@ -39,12 +39,30 @@ export function BookingForm({ booking, index, resetBooking, resetIndex, setBooki
   ]
 
   const save = () => {
+    checkValidations()
     index.valueOf() > -1
       ? updateBooking(booking, index)
       : addBooking(booking)
 
     resetIndex()
     resetBooking()
+  }
+  const checkValidations = () => {
+    // @ts-ignore
+    with (booking) {
+
+    }
+    // const {
+    //   name,
+    //   place,
+    //   origin,
+    //   checkIn,
+    //   checkOut,
+    //   housingType,
+    //   paymentOption,
+    //   totalAmount,
+    //   signedAmount
+    // } = booking
   }
   const addBooking = useBooking(state => state.addBooking)
   const updateBooking = useBooking(state => state.updateBooking)
