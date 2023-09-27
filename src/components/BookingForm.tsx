@@ -11,21 +11,19 @@ import {
 } from "@mui/material";
 import {DateTimePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs from "dayjs";
+import dayjs, {name} from "dayjs";
 import {PaymentOptions} from "../types/PaymentOptions.ts";
 import {HousingTypes} from "../types/HousingTypes.ts";
 import {useBooking} from "../store.tsx";
 import {BookingRequest} from "../interfaces/BookingRequest.ts";
+import {UseFormRegister, UseFormRegisterReturn} from "react-hook-form/dist/types/form";
+import {FieldPath} from "react-hook-form";
 
 interface BookingFormProps {
-  booking: BookingRequest
-  index: number
-  resetBooking: () => void
-  resetIndex: () => void
-  setBooking: (booking: BookingRequest) => void
+  register
 }
 
-export function BookingForm({ booking, index, resetBooking, resetIndex, setBooking }: BookingFormProps) {
+export function BookingForm({ register }: BookingFormProps) {
 
   const paymentOptions = [
     {text: 'Está Pago', value: PaymentOptions.Paid},
@@ -38,83 +36,54 @@ export function BookingForm({ booking, index, resetBooking, resetIndex, setBooki
     {text: 'Hostel', value: HousingTypes.Hostel}
   ]
 
-  const save = () => {
-    checkValidations()
-    index.valueOf() > -1
-      ? updateBooking(booking, index)
-      : addBooking(booking)
-
-    resetIndex()
-    resetBooking()
-  }
-  const checkValidations = () => {
-    // @ts-ignore
-    with (booking) {
-
-    }
-    // const {
-    //   name,
-    //   place,
-    //   origin,
-    //   checkIn,
-    //   checkOut,
-    //   housingType,
-    //   paymentOption,
-    //   totalAmount,
-    //   signedAmount
-    // } = booking
-  }
-  const addBooking = useBooking(state => state.addBooking)
-  const updateBooking = useBooking(state => state.updateBooking)
-
   return (
     <>
       <Card  sx={{mt: 2}}>
         <Box
-          component="form"
           sx={{
             '& .MuiTextField-root': { m: 1, width: '50ch', mt: 2 },
           }}
-          autoComplete="off"
         >
           <TextField
             id="outlined-multiline-flexible"
             placeholder="Nombre Lugar"
-            value={booking.name}
-            onChange={(evt) => {
-              setBooking({...booking, name: evt.target.value})
-            }}
+            // onChange={(evt) => {
+            //   setBooking({...booking, name: evt.target.value})
+            // }}
+            {...register('name')}
           />
           <TextField
             id="outlined-multiline-flexible-2"
             placeholder="¿Donde queda?"
-            value={booking.place}
-            onChange={(evt) => {
-              setBooking({...booking, place: evt.target.value})
-            }}
+            // onChange={(evt) => {
+            //   setBooking({...booking, place: evt.target.value})
+            // }}
+            {...register('place')}
           />
           <TextField
             id="outlined-multiline-flexible-2"
             placeholder="Medio de Reserva"
-            value={booking.origin}
-            onChange={(evt) => {
-              setBooking({...booking, origin: evt.target.value})
-            }}
+            // value={booking.origin}
+            // onChange={(evt) => {
+            //   setBooking({...booking, origin: evt.target.value})
+            // }}
+            {...register('origin')}
           />
           <div>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DateTimePicker
-                value={dayjs(booking.checkIn)}
+                // value={dayjs(booking.checkIn)}
                 label="Check In"
-                onChange={(evt) => {
-                  console.log()
-                  setBooking({...booking, checkIn: evt.$d})
-                }}
+                // onChange={(evt) => {
+                //   setBooking({...booking, checkIn: evt.$d})
+                // }}
+                {...register('checkIn', { valueAsDate: true})}
               />
               <DateTimePicker
-                value={dayjs(booking.checkOut)}
+                // value={dayjs(booking.checkOut)}
                 label="Check Out"
-                onChange={(evt) => setBooking({...booking, checkOut: evt.$d})}
+                // onChange={(evt) => setBooking({...booking, checkOut: evt.$d})}
+                {...register('checkOut', { valueAsDate: true})}
               />
             </LocalizationProvider>
           </div>
@@ -123,9 +92,10 @@ export function BookingForm({ booking, index, resetBooking, resetIndex, setBooki
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
-              value={booking.housingType}
-              onChange={(e) => setBooking({...booking, housingType: e.target.value})}
+              // value={booking.housingType}
+              // onChange={(e) => setBooking({...booking, housingType: e.target.value})}
               label="Tipo Alojamiento"
+              {...register('housingType')}
             >
               {housingTypes.map(type => (
                   <MenuItem key={type.value} value={type.value}>{type.text}</MenuItem>
@@ -138,9 +108,10 @@ export function BookingForm({ booking, index, resetBooking, resetIndex, setBooki
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
-              value={booking.paymentOption}
-              onChange={e => setBooking({...booking, paymentOption: e.target.value})}
+              // value={booking.paymentOption}
+              // onChange={e => setBooking({...booking, paymentOption: e.target.value})}
               label="Opción de Pago"
+              {...register('paymentOption')}
             >
               {paymentOptions.map(option => (
                   <MenuItem key={option.value} value={option.value}>{option.text}</MenuItem>
@@ -149,40 +120,33 @@ export function BookingForm({ booking, index, resetBooking, resetIndex, setBooki
             </Select>
           </FormControl>
           <div>
-            {booking.paymentOption === PaymentOptions.Signed && (
-              <FormControl sx={{ m: 1 }}>
-                <InputLabel id="demo-simple-select-label">Seña</InputLabel>
-                <OutlinedInput
-                  id="outlined-adornment-amount"
-                  value={booking.signedAmount}
-                  type="number"
-                  startAdornment={<InputAdornment position="start">$</InputAdornment>}
-                  label="Seña"
-                  onChange={(e) => setBooking({...booking, signedAmount: Number(e.target.value)})}
-                />
-              </FormControl>
-            )}
+            {/*{booking.paymentOption === PaymentOptions.Signed && (*/}
+            {/*  <FormControl sx={{ m: 1 }}>*/}
+            {/*    <InputLabel id="demo-simple-select-label">Seña</InputLabel>*/}
+            {/*    <OutlinedInput*/}
+            {/*      id="outlined-adornment-amount"*/}
+            {/*      // value={booking.signedAmount}*/}
+            {/*      type="number"*/}
+            {/*      startAdornment={<InputAdornment position="start">$</InputAdornment>}*/}
+            {/*      label="Seña"*/}
+            {/*      // onChange={(e) => setBooking({...booking, signedAmount: Number(e.target.value)})}*/}
+            {/*      {...register('signedAmount')}*/}
+            {/*    />*/}
+            {/*  </FormControl>*/}
+            {/*)}*/}
             <FormControl sx={{ m: 1 }}>
-              <InputLabel id="demo-simple-select-label">{booking.paymentOption === PaymentOptions.NoPaid ? 'Monto Aprox.' : 'Monto Total'}</InputLabel>
+              {/*<InputLabel id="demo-simple-select-label">{booking.paymentOption === PaymentOptions.NoPaid ? 'Monto Aprox.' : 'Monto Total'}</InputLabel>*/}
               <OutlinedInput
                 id="outlined-adornment-amount"
-                value={booking.totalAmount}
+                // value={booking.totalAmount}
                 type="number"
                 startAdornment={<InputAdornment position="start">$</InputAdornment>}
-                label={booking.paymentOption === PaymentOptions.NoPaid ? 'Monto Aprox.' : 'Monto Total'}
-                onChange={(e) => setBooking({...booking, totalAmount: Number(e.target.value)})}
+                // label={booking.paymentOption === PaymentOptions.NoPaid ? 'Monto Aprox.' : 'Monto Total'}
+                // onChange={(e) => setBooking({...booking, totalAmount: Number(e.target.value)})}
+                {...register('totalAmount')}
               />
             </FormControl>
           </div>
-          <Box sx={{my: 2}}>
-            <Button
-              color="success"
-              variant="outlined"
-              onClick={save}
-            >
-              Guardar
-            </Button>
-          </Box>
         </Box>
       </Card>
     </>

@@ -1,12 +1,15 @@
-import {Box, Card, Grid, IconButton} from "@mui/material";
+import {Box, Button, Card, Grid, IconButton} from "@mui/material";
 import {Delete, Edit} from "@mui/icons-material";
 import {BookingRequest} from "../interfaces/BookingRequest.ts";
 import {v4 as uuidV4} from "uuid";
 import {HousingTypes} from "../types/HousingTypes.ts";
 import {PaymentOptions} from "../types/PaymentOptions.ts";
-import {useMemo, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {useBooking} from "../store.tsx";
 import {BookingForm} from "./BookingForm.tsx";
+import {useForm} from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as Yup from "yup";
 
 export function BookingBoard() {
   const cleanBooking: BookingRequest = {
@@ -23,6 +26,11 @@ export function BookingBoard() {
   }
   const [booking, setBooking] = useState<BookingRequest>(cleanBooking)
   const [index, setIndex] = useState(-1)
+
+  const  { register, handleSubmit, setValue, setError, formState: errors } = useForm({
+    resolver: yupResolver()
+  })
+
   const bookingList = useBooking(state => state.bookings)
 
   const getPaidTotal = useMemo(() => {
@@ -48,6 +56,18 @@ export function BookingBoard() {
   }, [bookingList])
 
   const getTotal = useMemo(() => getPaidTotal + getNoPaidTotal, [getPaidTotal, getNoPaidTotal])
+
+  const createBooking = data => {
+    console.log(data)
+    // index.valueOf() > -1
+    //   ? updateBooking(booking, index)
+    //   : addBooking(booking)
+    //
+    // setBooking(cleanBooking)
+    // setIndex(-1)
+  }
+  const addBooking = useBooking(state => state.addBooking)
+  const updateBooking = useBooking(state => state.updateBooking)
 
   const editBooking = (booking: BookingRequest) => {
     setIndex(bookingList.indexOf(booking))
@@ -108,13 +128,20 @@ export function BookingBoard() {
           </Grid>
         }
       </Card>
-
-      <BookingForm
-        booking={booking} index={index}
-        resetBooking={() => setBooking(cleanBooking)}
-        resetIndex={() => setIndex(-1)}
-        setBooking={setBooking}
-      />
+      <form onSubmit={handleSubmit(createBooking)}>
+        <BookingForm
+          register={register}
+        />
+        <Box sx={{my: 2}}>
+          <Button
+            type="submit"
+            color="success"
+            variant="outlined"
+          >
+            Guardar
+          </Button>
+        </Box>
+      </form>
     </>
   )
 }
