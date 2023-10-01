@@ -1,5 +1,5 @@
 import './App.css'
-import {BookingBoard} from "./components/BookingBoard.tsx";
+import {BookingBoard} from "./pages/BookingBoard.tsx";
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';

@@ -4,26 +4,16 @@ import {BookingRequest} from "../interfaces/BookingRequest.ts";
 import {v4 as uuidV4} from "uuid";
 import {HousingTypes} from "../types/HousingTypes.ts";
 import {PaymentOptions} from "../types/PaymentOptions.ts";
-import {useMemo, useState} from "react";
-import {useBooking} from "../store.tsx";
-import {BookingForm} from "./BookingForm.tsx";
+import {useCallback, useMemo, useState} from "react";
+import {useBooking} from "../bookingStore.tsx";
+import {BookingForm} from "../components/BookingForm.tsx";
 import {useForm} from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
+import {useFinance} from "../financeStore.tsx";
 
 export function BookingBoard() {
-  const cleanBooking: BookingRequest = {
-    id: uuidV4(),
-    name: '',
-    place: '',
-    origin: '',
-    checkIn: new Date(),
-    checkOut: new Date(),
-    housingType: HousingTypes.Room,
-    paymentOption: PaymentOptions.NoPaid,
-    totalAmount: 0,
-    signedAmount: 0
-  }
+  const grandTotal = useFinance(state => state.grandTotal)
   const [index, setIndex] = useState(-1)
 
   const validationSchema = Yup.object().shape({
@@ -75,6 +65,7 @@ export function BookingBoard() {
 
     reset()
     setIndex(-1)
+    updateNoPaidTotal(getTotal, getNoPaidTotal, getPaidTotal)
   }
   const addBooking = useBooking(state => state.addBooking)
   const updateBooking = useBooking(state => state.updateBooking)
@@ -87,18 +78,23 @@ export function BookingBoard() {
     // setValue('checkIn', booking.checkIn)
     // setValue('checkOut', booking.checkOut)
     setValue('housingType', booking.housingType)
-    setValue('paymentOption', booking.paymentOption)
+    setValue('paymentOption', booking.paymentOption.valueOf())
     setValue('totalAmount', booking.totalAmount)
     setValue('signedAmount', booking.signedAmount)
   }
   const deleteBooking = (booking: BookingRequest) => {
     setIndex(bookingList.indexOf(booking))
     removeBooking(booking, index)
+    updateNoPaidTotal(getTotal, getNoPaidTotal, getPaidTotal)
+    setIndex(-1)
   }
   const removeBooking = useBooking(state => state.removeBooking)
 
+  const updateNoPaidTotal = useFinance(state => state.updateTotals)
+
   return (
     <>
+      <p>Total: {grandTotal}</p>
       <Card>
         <Box sx={{ justifyContent: "center" }}>
           Mis reservas

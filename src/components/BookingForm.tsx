@@ -132,6 +132,7 @@ export function BookingForm({ register, errors }: BookingFormProps) {
               <OutlinedInput
                 id="outlined-adornment-amount"
                 type="number"
+                defaultValue={0}
                 startAdornment={<InputAdornment position="start">$</InputAdornment>}
                 label="Seña"
                 {...register('signedAmount')}
@@ -143,6 +144,7 @@ export function BookingForm({ register, errors }: BookingFormProps) {
             <OutlinedInput
               id="outlined-adornment-amount"
               type="number"
+              defaultValue={0}
               startAdornment={<InputAdornment position="start">$</InputAdornment>}
               {...register('totalAmount')}
               error={!!errors.totalAmount}
