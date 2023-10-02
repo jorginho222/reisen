@@ -1,20 +1,21 @@
 import {Box, Button, Card, Grid, IconButton} from "@mui/material";
 import {Delete, Edit} from "@mui/icons-material";
-import {BookingRequest} from "../interfaces/BookingRequest.ts";
+import {BookingRequest} from "../interfaces/Booking/BookingRequest.ts";
 import {v4 as uuidV4} from "uuid";
-import {HousingTypes} from "../types/HousingTypes.ts";
-import {PaymentOptions} from "../types/PaymentOptions.ts";
-import {useCallback, useMemo, useState} from "react";
-import {useBooking} from "../bookingStore.tsx";
+import {PaymentOptions} from "../types/booking/PaymentOptions.ts";
+import {useMemo, useState} from "react";
+import {useBooking} from "../store/bookingStore.tsx";
 import {BookingForm} from "../components/BookingForm.tsx";
 import {useForm} from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
+import {yupResolver} from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-import {useFinance} from "../financeStore.tsx";
+import {useFinance} from "../store/financeStore.tsx";
+import {ModuleTypes} from "../types/booking/ModuleTypes.ts";
+import {ModuleTotals} from "../interfaces/ModuleTotals.ts";
 
 export function BookingBoard() {
-  const grandTotal = useFinance(state => state.grandTotal)
   const [index, setIndex] = useState(-1)
+  const bookingList = useBooking(state => state.bookings)
 
   const validationSchema = Yup.object().shape({
     name: Yup.string().required('El nombre es requerido'),
@@ -26,12 +27,9 @@ export function BookingBoard() {
     paymentOption: Yup.string().required('El tipo de pago es requerido'),
     totalAmount: Yup.number().required('El monto total es requerido'),
   })
-
-  const  { register, control, handleSubmit, setValue, reset, formState: {errors} } = useForm<BookingRequest|any>({
-    resolver: yupResolver(validationSchema)
+  const  { register, handleSubmit, setValue, reset, formState: {errors} } = useForm<BookingRequest|any>({
+    resolver: yupResolver(validationSchema),
   })
-
-  const bookingList = useBooking(state => state.bookings)
 
   const getPaidTotal = useMemo(() => {
     let total = 0
@@ -57,19 +55,23 @@ export function BookingBoard() {
 
   const getTotal = useMemo(() => getPaidTotal + getNoPaidTotal, [getPaidTotal, getNoPaidTotal])
 
+  const bookingTotals: ModuleTotals = {
+    module: ModuleTypes.Booking,
+    noPaid: getNoPaidTotal,
+    paid: getPaidTotal,
+    total: getTotal
+  }
+
   const createBooking = (booking: BookingRequest) => {
-    console.log(booking)
+    booking.id = uuidV4()
     index.valueOf() > -1
       ? updateBooking(booking, index)
       : addBooking(booking)
 
     reset()
     setIndex(-1)
-    updateNoPaidTotal(getTotal, getNoPaidTotal, getPaidTotal)
+    updateTotals(bookingTotals)
   }
-  const addBooking = useBooking(state => state.addBooking)
-  const updateBooking = useBooking(state => state.updateBooking)
-
   const editBooking = (booking: BookingRequest) => {
     setIndex(bookingList.indexOf(booking))
     setValue('name', booking.name)
@@ -85,16 +87,16 @@ export function BookingBoard() {
   const deleteBooking = (booking: BookingRequest) => {
     setIndex(bookingList.indexOf(booking))
     removeBooking(booking, index)
-    updateNoPaidTotal(getTotal, getNoPaidTotal, getPaidTotal)
+    updateTotals(bookingTotals)
     setIndex(-1)
   }
+  const addBooking = useBooking(state => state.addBooking)
+  const updateBooking = useBooking(state => state.updateBooking)
   const removeBooking = useBooking(state => state.removeBooking)
-
-  const updateNoPaidTotal = useFinance(state => state.updateTotals)
+  const updateTotals = useFinance(state => state.updateTotals)
 
   return (
     <>
-      <p>Total: {grandTotal}</p>
       <Card>
         <Box sx={{ justifyContent: "center" }}>
           Mis reservas

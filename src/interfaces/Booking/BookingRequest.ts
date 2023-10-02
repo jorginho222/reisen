@@ -1,5 +1,5 @@
-import {HousingTypes} from "../types/HousingTypes.ts";
-import {PaymentOptions} from "../types/PaymentOptions.ts";
+import {HousingTypes} from "../../types/booking/HousingTypes.ts";
+import {PaymentOptions} from "../../types/booking/PaymentOptions.ts";
 
 export interface BookingRequest {
   id: string,

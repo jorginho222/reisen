@@ -1,4 +1,4 @@
-import {ModuleTypes} from "../types/ModuleTypes.ts";
+import {ModuleTypes} from "../types/booking/ModuleTypes.ts";
 
 export interface ModuleTotals {
   module: ModuleTypes,

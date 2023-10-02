@@ -1,5 +1,5 @@
 import {create} from "zustand";
-import {BookingRequest} from "./interfaces/BookingRequest.ts";
+import {BookingRequest} from "../interfaces/Booking/BookingRequest.ts";
 
 export const useBooking = create<{
   bookings: BookingRequest[],
