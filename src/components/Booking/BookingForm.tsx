@@ -10,8 +10,8 @@ import {
 } from "@mui/material";
 import {DateTimePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
-import {PaymentOptions} from "../types/booking/PaymentOptions.ts";
-import {HousingTypes} from "../types/booking/HousingTypes.ts";
+import {PaymentOptions} from "../../types/booking/PaymentOptions.ts";
+import {HousingTypes} from "../../types/booking/HousingTypes.ts";
 import {useState} from "react";
 import {UseFormRegister} from "react-hook-form/dist/types/form";
 import {FieldErrors} from "react-hook-form/dist/types/errors";

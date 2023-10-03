@@ -5,7 +5,7 @@ import {v4 as uuidV4} from "uuid";
 import {PaymentOptions} from "../types/booking/PaymentOptions.ts";
 import {useMemo, useState} from "react";
 import {useBooking} from "../store/bookingStore.tsx";
-import {BookingForm} from "../components/BookingForm.tsx";
+import {BookingForm} from "../components/Booking/BookingForm.tsx";
 import {useForm} from "react-hook-form";
 import {yupResolver} from "@hookform/resolvers/yup";
 import * as Yup from "yup";

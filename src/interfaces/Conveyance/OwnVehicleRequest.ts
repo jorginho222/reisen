@@ -1,9 +1,9 @@
 import {ConveyanceRequest} from "./ConveyanceRequest.ts";
 
-export interface TravelRequest extends ConveyanceRequest {
-  media: string,
+export interface OwnVehicleRequest extends ConveyanceRequest {
   origin: string,
   destiny: string,
-  pickUp: Date,
+  departure: Date,
   arrival: Date,
+  fuelCost?: number
 }

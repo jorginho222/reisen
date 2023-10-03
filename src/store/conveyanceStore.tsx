@@ -16,6 +16,5 @@ export const useConveyance = create<{
   },
   removeConveyance: async (conveyance, index) => {
 
-  },
-)
-})
+  }
+}))
