@@ -7,6 +7,7 @@ import {ConveyanceTypes} from "../types/conveyance/ConveyanceTypes.ts";
 import {ConveyanceRequest} from "../interfaces/Conveyance/ConveyanceRequest.ts";
 import {Box, Button, Card} from "@mui/material";
 import {ConveyanceForm} from "../components/Conveyance/ConveyanceForm.tsx";
+import {v4 as uuidV4} from "uuid";
 
 export function ConveyanceBoard() {
   const [index, setIndex] = useState<number>(-1)
@@ -54,11 +55,21 @@ export function ConveyanceBoard() {
     resolver: yupResolver(validationResolver())
   })
 
+  const createConveyance = (conveyance: ConveyanceRequest) => {
+    conveyance.id = uuidV4()
+    console.log(conveyance)
+  }
+
   return (
     <>
       <Card  sx={{mt: 2}}>
-        <form onSubmit={handleSubmit}>
-          <ConveyanceForm register={register} errors={errors} />
+        <form onSubmit={handleSubmit(createConveyance)}>
+          <ConveyanceForm
+            register={register} errors={errors}
+            setConveyanceType={conveyanceType => {
+              setConveyanceType(conveyanceType)
+            }}
+          />
           <Box sx={{my: 2}}>
             <Button
               type="submit"

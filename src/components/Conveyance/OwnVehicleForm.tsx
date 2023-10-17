@@ -43,8 +43,8 @@ export function OwnVehicleForm({register, errors}: ConveyanceFormProps) {
         <TextField
           id="outlined-multiline-flexible-2"
           placeholder="Gastos combustible"
-          {...register('fuelCost')}
-          error={!!errors.fuelCost}
+          {...register('totalAmount')}
+          error={!!errors.totalAmount}
         />
       </Box>
     </>

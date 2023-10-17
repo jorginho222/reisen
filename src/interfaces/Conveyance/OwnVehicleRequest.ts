@@ -5,5 +5,4 @@ export interface OwnVehicleRequest extends ConveyanceRequest {
   destiny: string,
   departure: Date,
   arrival: Date,
-  fuelCost?: number
 }

@@ -5,13 +5,15 @@ import {FieldErrors} from "react-hook-form/dist/types/errors";
 import {useState} from "react";
 import {TicketForm} from "./TicketForm.tsx";
 import {OwnVehicleForm} from "./OwnVehicleForm.tsx";
+import {CarRentalForm} from "./CarRentalForm.tsx";
 
 export interface ConveyanceFormProps {
   register: UseFormRegister<TFieldValues>,
   errors: FieldErrors<TFieldValues>,
+  setConveyanceType: (conveyanceType: ConveyanceTypes) => void
 }
 
-export function ConveyanceForm({register, errors}: ConveyanceFormProps) {
+export function ConveyanceForm({register, errors, setConveyanceType}: ConveyanceFormProps) {
   const conveyanceTypes = [
     {text: 'Pasaje', value: ConveyanceTypes.Ticket},
     {text: 'Alquiler de Auto', value: ConveyanceTypes.CarRental},
@@ -31,6 +33,7 @@ export function ConveyanceForm({register, errors}: ConveyanceFormProps) {
             onChange={(event) => {
               // @ts-ignore
               setSelectedConveyanceType(event.target.value)
+              setConveyanceType(selectedConveyanceType)
             }}
             error={!!errors.type}
           >
@@ -51,6 +54,9 @@ export function ConveyanceForm({register, errors}: ConveyanceFormProps) {
 
               case ConveyanceTypes.OwnVehicle:
                 return <OwnVehicleForm register={register} errors={errors} />
+
+              case ConveyanceTypes.CarRental:
+                return <CarRentalForm register={register} errors={errors} />
             }
           })()
         }
