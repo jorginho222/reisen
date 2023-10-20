@@ -1,6 +1,5 @@
-export interface ConveyanceRequest {
-  id: string,
-  type: string,
-  totalAmount: number,
-  partialAmount?: number
-}
+import {CarRentalRequest} from "./CarRentalRequest.ts";
+import {OwnVehicleRequest} from "./OwnVehicleRequest.ts";
+import {TravelTicketRequest} from "./TravelTicketRequest.ts";
+
+export type ConveyanceRequest = CarRentalRequest & OwnVehicleRequest & TravelTicketRequest

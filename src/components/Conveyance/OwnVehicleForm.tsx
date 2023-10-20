@@ -3,7 +3,7 @@ import {Box, FormControl, InputLabel, MenuItem, Select, TextField, Typography} f
 import {DateTimePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 
-export function OwnVehicleForm({register, errors}: ConveyanceFormProps) {
+export function OwnVehicleForm({register, errors, setConveyanceType}: ConveyanceFormProps) {
 
   return (
     <>
@@ -18,12 +18,19 @@ export function OwnVehicleForm({register, errors}: ConveyanceFormProps) {
           {...register('origin')}
           error={!!errors.origin}
         />
+        <Typography variant="inherit" color="textSecondary">
+          {errors.origin?.message}
+        </Typography>
+
         <TextField
           id="outlined-multiline-flexible-2"
           placeholder="Lugar llegada"
           {...register('destiny')}
-          error={!!errors.origin}
+          error={!!errors.destiny}
         />
+        <Typography variant="inherit" color="textSecondary">
+          {errors.destiny?.message}
+        </Typography>
         <div>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DateTimePicker
@@ -40,12 +47,16 @@ export function OwnVehicleForm({register, errors}: ConveyanceFormProps) {
             />
           </LocalizationProvider>
         </div>
+
         <TextField
           id="outlined-multiline-flexible-2"
           placeholder="Gastos combustible"
           {...register('totalAmount')}
           error={!!errors.totalAmount}
         />
+        <Typography variant="inherit" color="textSecondary">
+          {errors.totalAmount?.message}
+        </Typography>
       </Box>
     </>
   );

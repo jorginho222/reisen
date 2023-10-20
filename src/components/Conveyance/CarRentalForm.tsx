@@ -3,7 +3,7 @@ import {DateTimePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import {Box, TextField} from "@mui/material";
 
-export function CarRentalForm({register, errors}: ConveyanceFormProps) {
+export function CarRentalForm({register, errors, setConveyanceType}: ConveyanceFormProps) {
   return (
     <>
       <Box

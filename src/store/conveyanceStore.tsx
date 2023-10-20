@@ -9,7 +9,10 @@ export const useConveyance = create<{
 }>((set, get) => ({
   conveyanceList: [],
   addConveyance: async conveyance => {
-
+    // await fetch()
+    set({
+      conveyanceList: [...get().conveyanceList, conveyance]
+    })
   },
   updateConveyance: async (conveyance, index) => {
 
