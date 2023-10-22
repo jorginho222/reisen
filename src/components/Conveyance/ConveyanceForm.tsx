@@ -6,14 +6,12 @@ import {useState} from "react";
 import {TicketForm} from "./TicketForm.tsx";
 import {OwnVehicleForm} from "./OwnVehicleForm.tsx";
 import {CarRentalForm} from "./CarRentalForm.tsx";
-
-export interface ConveyanceFormProps {
-  register: UseFormRegister<TFieldValues>,
-  errors: FieldErrors<TFieldValues>,
-  setConveyanceType: (conveyanceType: ConveyanceTypes) => void
+interface ConveyanceFormProps {
+  resetIndex: (index: number) => void,
+  index: number,
 }
 
-export function ConveyanceForm({register, errors, setConveyanceType}: ConveyanceFormProps) {
+export function ConveyanceForm({resetIndex, index}: ConveyanceFormProps) {
   const conveyanceTypes = [
     {text: 'Pasaje', value: ConveyanceTypes.Ticket},
     {text: 'Alquiler de Auto', value: ConveyanceTypes.CarRental},
@@ -30,11 +28,9 @@ export function ConveyanceForm({register, errors, setConveyanceType}: Conveyance
           id="demo-simple-select"
           defaultValue=""
           label="Tipo"
-          {...register('type')}
           onChange={(event) => {
             // @ts-ignore
             setSelectedConveyanceType(event.target.value)
-            setConveyanceType(selectedConveyanceType)
           }}
           error={!!errors.type}
         >
@@ -51,38 +47,16 @@ export function ConveyanceForm({register, errors, setConveyanceType}: Conveyance
         (() => {
           switch (selectedConveyanceType) {
             case ConveyanceTypes.Ticket:
-              return <TicketForm register={register} errors={errors}  setConveyanceType={conveyanceType => {
-                setConveyanceType(conveyanceType)
-              }}/>
+              return <TicketForm register={register} errors={errors} />
 
             case ConveyanceTypes.OwnVehicle:
-              return <OwnVehicleForm register={register} errors={errors} setConveyanceType={conveyanceType => {
-                setConveyanceType(conveyanceType)
-              }} />
+              return <OwnVehicleForm resetIndex={resetIndex} index={index} />
 
             case ConveyanceTypes.CarRental:
-              return <CarRentalForm register={register} errors={errors} setConveyanceType={conveyanceType => {
-                setConveyanceType(conveyanceType)
-              }} />
+              return <CarRentalForm register={register} errors={errors} />
           }
         })()
       }
-      {selectedConveyanceType !== ConveyanceTypes.OwnVehicle && (
-        <div>
-          <InputLabel id="demo-simple-select-label">Total</InputLabel>
-          <TextField
-            id="outlined-multiline-flexible-2"
-            type="number"
-            defaultValue={0}
-            startAdornment={<InputAdornment position="start">$</InputAdornment>}
-            {...register('totalAmount')}
-            error={!!errors.totalAmount}
-          />
-          <Typography variant="inherit" color="textSecondary">
-            {errors.totalAmount?.message}
-          </Typography>
-        </div>
-      )}
     </>
   );
 }

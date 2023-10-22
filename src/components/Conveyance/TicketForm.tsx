@@ -1,12 +1,21 @@
-import {Box, FormControl, InputLabel, MenuItem, Select, TextField, Typography} from "@mui/material";
+import {
+  Box,
+  Button,
+  FormControl,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Typography
+} from "@mui/material";
 import {DateTimePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
-import {ConveyanceFormProps} from "./ConveyanceForm.tsx";
 import {ConveyanceMediaTypes} from "../../types/conveyance/conveyanceMediaTypes.ts";
-import {useState} from "react";
+import React, {useState} from "react";
 import dayjs from "dayjs";
 
-export function TicketForm({register, errors, setConveyanceType}: ConveyanceFormProps) {
+export function TicketForm() {
   const mediaTypes = [
     {text: 'Micro', value: ConveyanceMediaTypes.Bus},
     {text: 'Vuelo', value: ConveyanceMediaTypes.Flight},
@@ -16,8 +25,8 @@ export function TicketForm({register, errors, setConveyanceType}: ConveyanceForm
   // const [pickUpDate, setPickUpDate] = useState<Date>(new Date())
   // const [arrivalDate, setArrivalDate] = useState<Date>(new Date())
 
-  const pickUp = register('pickUp', { valueAsDate: true })
-  const arrival = register('arrival', { valueAsDate: true })
+  // const pickUp = register('pickUp', { valueAsDate: true })
+  // const arrival = register('arrival', { valueAsDate: true })
 
   return (
     <>
@@ -107,6 +116,31 @@ export function TicketForm({register, errors, setConveyanceType}: ConveyanceForm
             />
           </LocalizationProvider>
         </div>
+
+        <div>
+          <InputLabel id="demo-simple-select-label">Total</InputLabel>
+          <TextField
+            id="outlined-multiline-flexible-2"
+            type="number"
+            defaultValue={0}
+            startAdornment={<InputAdornment position="start">$</InputAdornment>}
+            {...register('totalAmount')}
+            error={!!errors.totalAmount}
+          />
+          <Typography variant="inherit" color="textSecondary">
+            {errors.totalAmount?.message}
+          </Typography>
+        </div>
+      </Box>
+
+      <Box sx={{my: 2}}>
+        <Button
+          type="submit"
+          color="success"
+          variant="outlined"
+        >
+          Guardar
+        </Button>
       </Box>
     </>
   );

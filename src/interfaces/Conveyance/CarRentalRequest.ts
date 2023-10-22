@@ -4,5 +4,4 @@ export interface CarRentalRequest extends BaseConveyanceRequest {
   pickUp: Date,
   devolution: Date,
   place: string,
-  fuelCost?: number,
 }

@@ -1,23 +1,60 @@
 import {create} from "zustand";
 import {ConveyanceRequest} from "../interfaces/Conveyance/ConveyanceRequest.ts";
+import {OwnVehicleRequest} from "../interfaces/Conveyance/OwnVehicleRequest.ts";
+import {CarRentalRequest} from "../interfaces/Conveyance/CarRentalRequest.ts";
+import {TravelTicketRequest} from "../interfaces/Conveyance/TravelTicketRequest.ts";
 
 export const useConveyance = create<{
-  conveyanceList: ConveyanceRequest[],
-  addConveyance: (conveyance: ConveyanceRequest) => void,
-  updateConveyance: (conveyance: ConveyanceRequest, index: number) => void
-  removeConveyance: (conveyance: ConveyanceRequest, index: number) => void
+  ownVehicleConveyances: OwnVehicleRequest[],
+  carRentalConveyances: CarRentalRequest[],
+  ticketConveyances: TravelTicketRequest[],
+
+  addOwnVehicleConveyance: (conveyance: OwnVehicleRequest) => void,
+  addCarRentalConveyance: (conveyance: CarRentalRequest) => void,
+  addTicketConveyance: (conveyance: TravelTicketRequest) => void,
+  updateOwnVehicleConveyance: (conveyance: OwnVehicleRequest, index: number) => void
+  updateCarRentalConveyance: (conveyance: CarRentalRequest, index: number) => void
+  updateTicketConveyance: (conveyance: TravelTicketRequest, index: number) => void
+  removeOwnVehicleConveyance: (conveyance: OwnVehicleRequest, index: number) => void
+  removeCarRentalConveyance: (conveyance: CarRentalRequest, index: number) => void
+  removeTicketConveyance: (conveyance: TravelTicketRequest, index: number) => void
 }>((set, get) => ({
-  conveyanceList: [],
-  addConveyance: async conveyance => {
+  ownVehicleConveyances: [],
+  carRentalConveyances: [],
+  ticketConveyances: [],
+
+  addOwnVehicleConveyance: async conveyance => {
     // await fetch()
     set({
-      conveyanceList: [...get().conveyanceList, conveyance]
+      ownVehicleConveyances: [...get().ownVehicleConveyances, conveyance]
     })
   },
-  updateConveyance: async (conveyance, index) => {
+  addCarRentalConveyance: async conveyance => {
+    set({
+      carRentalConveyances: [...get().carRentalConveyances, conveyance]
+    })
+  },
+  addTicketConveyance: async conveyance => {
+    set({
+      ticketConveyances: [...get().ticketConveyances, conveyance]
+    })
+  },
+
+  updateOwnVehicleConveyance: async (conveyance, index) => {
+    // await fetch()
 
   },
+  updateCarRentalConveyance: async (conveyance, index) => {
+    // await fetch()
+
+  },
+  updateTicketConveyance: async (conveyance, index) => {
+    // await fetch()
+
+  },
+
   removeConveyance: async (conveyance, index) => {
+    // await fetch()
 
   }
 }))

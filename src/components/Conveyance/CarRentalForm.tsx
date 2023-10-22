@@ -1,9 +1,13 @@
-import {ConveyanceFormProps} from "./ConveyanceForm.tsx";
 import {DateTimePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
-import {Box, TextField} from "@mui/material";
+import {Box, Button, InputAdornment, InputLabel, TextField, Typography} from "@mui/material";
+import React from "react";
+interface CarRentalFormProps {
+  resetIndex: (index: number) => void,
+  index: number,
+}
 
-export function CarRentalForm({register, errors, setConveyanceType}: ConveyanceFormProps) {
+export function CarRentalForm({resetIndex, index}: CarRentalFormProps) {
   return (
     <>
       <Box
@@ -33,12 +37,30 @@ export function CarRentalForm({register, errors, setConveyanceType}: ConveyanceF
           {...register('place')}
           error={!!errors.place}
         />
-        <TextField
-          id="outlined-multiline-flexible-2"
-          placeholder="Gastos combustible"
-          {...register('fuelCost')}
-          error={!!errors.fuelCost}
-        />
+        <div>
+          <InputLabel id="demo-simple-select-label">Total</InputLabel>
+          <TextField
+            id="outlined-multiline-flexible-2"
+            type="number"
+            defaultValue={0}
+            startAdornment={<InputAdornment position="start">$</InputAdornment>}
+            {...register('totalAmount')}
+            error={!!errors.totalAmount}
+          />
+          <Typography variant="inherit" color="textSecondary">
+            {errors.totalAmount?.message}
+          </Typography>
+        </div>
+      </Box>
+
+      <Box sx={{my: 2}}>
+        <Button
+          type="submit"
+          color="success"
+          variant="outlined"
+        >
+          Guardar
+        </Button>
       </Box>
     </>
   );

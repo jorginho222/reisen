@@ -15,51 +15,31 @@ import {ConveyanceRequest} from "../interfaces/Conveyance/ConveyanceRequest.ts";
 
 export function ConveyanceBoard() {
   const [index, setIndex] = useState<number>(-1)
-  const conveyanceList: ConveyanceRequest[] = useConveyance(state => state.conveyanceList)
-  const [conveyanceType, setConveyanceType] = useState<ConveyanceTypes>()
+  const conveyanceList: ConveyanceRequest[] = useConveyance(state => state.ownVehicleConveyances)
   const ownVehicleConveyances: () => OwnVehicleRequest[] = useCallback(() => {
     return conveyanceList.filter(conveyance => conveyance.type === ConveyanceTypes.OwnVehicle)
+  }, [conveyanceList])
+  const ticketConveyances: () => TravelTicketRequest[] = useCallback(() => {
+    return conveyanceList.filter(conveyance => conveyance.type === ConveyanceTypes.Ticket)
+  }, [conveyanceList])
+  const carRentalConveyances: () => CarRentalRequest[] = useCallback(() => {
+    return conveyanceList.filter(conveyance => conveyance.type === ConveyanceTypes.CarRental)
   }, [conveyanceList])
 
   const baseValidationSchema = {
     type: Yup.string().required('El tipo de transporte es requerido'),
-    totalAmount: Yup.number().required('El monto total es requerido').min(1)
-  }
-  const travelValidationSchema = {
-    ...baseValidationSchema,
+    totalAmount: Yup.number().required('El monto total es requerido').min(1),
     media: Yup.string().required('El medio de transporte es requerido'),
     origin: Yup.string().required('El lugar de salida es requerido'),
     destiny: Yup.string().required('El lugar de llegada es requerido'),
     // pickUp: Yup.date().required(),
-    // arrival: Yup.date().required(),
-  }
-  const carRentalValidationSchema = {
-    ...baseValidationSchema,
-    // pickUp: Yup.date().required(),
-    // devolution: Yup.date().required(),
-  }
-  const ownVehicleValidationSchema = {
-    ...baseValidationSchema,
-    origin: Yup.string().required('El lugar de partida es requerido'),
-    destiny: Yup.string().required('El lugar de llegada es requerido'),
     // departure: Yup.date().required(),
     // arrival: Yup.date().required(),
+    // devolution: Yup.date().required(),
   }
 
-  const validationResolver = () => {
-    switch (conveyanceType) {
-      case ConveyanceTypes.Ticket:
-        return Yup.object().shape(travelValidationSchema)
-      case ConveyanceTypes.OwnVehicle:
-        return Yup.object().shape(ownVehicleValidationSchema)
-      case ConveyanceTypes.CarRental:
-        return Yup.object().shape(carRentalValidationSchema)
-      default:
-        return Yup.object().shape(baseValidationSchema)
-    }
-  }
-  const {register, reset, setValue, handleSubmit, formState: {errors}} = useForm<BaseConveyanceRequest|any>({
-    resolver: yupResolver(validationResolver())
+  const {register, reset, setValue, handleSubmit, formState: {errors}} = useForm<ConveyanceRequest>({
+    resolver: yupResolver()
   })
 
   const createConveyance = (conveyance: ConveyanceRequest) => {
@@ -125,12 +105,12 @@ export function ConveyanceBoard() {
         <Grid item xs={4}>
           <Card sx={{mt: 2}}>
             <Typography variant="h5" component="div">
-              Auto propio
+              Vehiculo propio
             </Typography>
             <Box sx={{mt: 2}}>
               <ul>
                 {ownVehicleConveyances().map(conveyance => (
-                  <li>
+                  <li key={conveyance.id}>
                     {conveyance.origin}
                   </li>
                 ))}
@@ -143,6 +123,15 @@ export function ConveyanceBoard() {
             <Typography variant="h5" component="div">
               Pasaje
             </Typography>
+            <Box sx={{mt: 2}}>
+              <ul>
+                {ticketConveyances().map(conveyance => (
+                  <li key={conveyance.id}>
+                    {conveyance.origin}
+                  </li>
+                ))}
+              </ul>
+            </Box>
           </Card>
         </Grid>
         <Grid item xs={4}>
@@ -150,26 +139,21 @@ export function ConveyanceBoard() {
             <Typography variant="h5" component="div">
               Alquiler
             </Typography>
+            <Box sx={{mt: 2}}>
+              <ul>
+                {carRentalConveyances().map(conveyance => (
+                  <li key={conveyance.id}>
+                    {conveyance.place}
+                  </li>
+                ))}
+              </ul>
+            </Box>
           </Card>
         </Grid>
       </Grid>
       <Card  sx={{mt: 2}}>
         <form onSubmit={handleSubmit(createConveyance)}>
-          <ConveyanceForm
-            register={register} errors={errors}
-            setConveyanceType={conveyanceType => {
-              setConveyanceType(conveyanceType)
-            }}
-          />
-          <Box sx={{my: 2}}>
-            <Button
-              type="submit"
-              color="success"
-              variant="outlined"
-            >
-              Guardar
-            </Button>
-          </Box>
+          <ConveyanceForm resetIndex={() => setIndex(-1)} index={index} />
         </form>
       </Card>
     </>
