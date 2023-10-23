@@ -4,7 +4,7 @@ import {
   FormControl,
   InputAdornment,
   InputLabel,
-  MenuItem,
+  MenuItem, OutlinedInput,
   Select,
   TextField,
   Typography
@@ -12,10 +12,20 @@ import {
 import {DateTimePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import {ConveyanceMediaTypes} from "../../types/conveyance/conveyanceMediaTypes.ts";
-import React, {useState} from "react";
-import dayjs from "dayjs";
+import {useState} from "react";
+import * as Yup from "yup";
+import {useForm} from "react-hook-form";
+import {yupResolver} from "@hookform/resolvers/yup";
+import {TravelTicketRequest} from "../../interfaces/Conveyance/TravelTicketRequest.ts";
+import {v4 as uuidV4} from "uuid";
+import {useConveyance} from "../../store/conveyanceStore.tsx";
 
-export function TicketForm() {
+interface TicketFormProps {
+  resetIndex: (index: number) => void,
+  index: number,
+}
+
+export function TicketForm({resetIndex, index}: TicketFormProps) {
   const mediaTypes = [
     {text: 'Micro', value: ConveyanceMediaTypes.Bus},
     {text: 'Vuelo', value: ConveyanceMediaTypes.Flight},
@@ -25,8 +35,31 @@ export function TicketForm() {
   // const [pickUpDate, setPickUpDate] = useState<Date>(new Date())
   // const [arrivalDate, setArrivalDate] = useState<Date>(new Date())
 
-  // const pickUp = register('pickUp', { valueAsDate: true })
-  // const arrival = register('arrival', { valueAsDate: true })
+  const validationSchema = {
+    totalAmount: Yup.number().required('El monto total es requerido').min(1),
+    media: Yup.string().required('El medio de transporte es requerido'),
+    origin: Yup.string().required('El lugar de salida es requerido'),
+    destiny: Yup.string().required('El lugar de llegada es requerido'),
+    // pickUp: Yup.date().required(),
+    // arrival: Yup.date().required(),
+  }
+
+  const {register, reset, setValue, handleSubmit, formState: {errors}} = useForm<TravelTicketRequest|any>({
+    resolver: yupResolver(Yup.object().shape(validationSchema))
+  })
+
+  const createConveyance = (conveyance: TravelTicketRequest) => {
+    conveyance.id = uuidV4()
+    console.log(conveyance)
+    index.valueOf() > -1
+      ? updateConveyance(conveyance, index)
+      : addConveyance(conveyance)
+
+    reset()
+    resetIndex(-1)
+  }
+  const addConveyance = useConveyance(state => state.addTicketConveyance)
+  const updateConveyance = useConveyance(state => state.updateTicketConveyance)
 
   return (
     <>
@@ -35,102 +68,101 @@ export function TicketForm() {
           '& .MuiTextField-root': { m: 1, width: '80ch', mt: 2 },
         }}
       >
-        <div>
-          <FormControl sx={{m: 1, minWidth: 300}}>
-            <InputLabel id="demo-simple-select-label">Medio</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              defaultValue=""
-              {...register('media')}
-              onChange={(event) => {
-                // @ts-ignore
-                setSelectedMediaType(event.target.value)
-              }}
-              error={!!errors.media}
-            >
-              {mediaTypes.map(option => (
-                  <MenuItem key={option.value} value={option.value}>{option.text}</MenuItem>
-                )
-              )}
-            </Select>
-            <Typography variant="inherit" color="textSecondary">
-              {errors.media?.message}
-            </Typography>
-          </FormControl>
-        </div>
+        <form onSubmit={handleSubmit(createConveyance)}>
+          <div>
+            <FormControl sx={{m: 1, minWidth: 300}}>
+              <InputLabel id="demo-simple-select-label">Medio</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                defaultValue={selectedMediaType}
+                {...register('media')}
+                onChange={(event) => {
+                  // @ts-ignore
+                  setSelectedMediaType(event.target.value)
+                }}
+                error={!!errors.media}
+              >
+                {mediaTypes.map(option => (
+                    <MenuItem key={option.value} value={option.value}>{option.text}</MenuItem>
+                  )
+                )}
+              </Select>
+              <Typography variant="inherit" color="textSecondary">
+                {errors.media?.message}
+              </Typography>
+            </FormControl>
+          </div>
 
-        <TextField
-          id="outlined-multiline-flexible-2"
-          placeholder="Lugar salida"
-          {...register('origin')}
-          error={!!errors.origin}
-        />
-        <Typography variant="inherit" color="textSecondary">
-          {errors.origin?.message}
-        </Typography>
-
-        <TextField
-          id="outlined-multiline-flexible-2"
-          placeholder="Lugar llegada"
-          {...register('destiny')}
-          error={!!errors.destiny}
-        />
-        <Typography variant="inherit" color="textSecondary">
-          {errors.destiny?.message}
-        </Typography>
-
-        <div>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateTimePicker
-              label="Fecha Salida"
-              {...pickUp}
-              onChange={(date: Date) => {
-                pickUp.onChange(date)
-              }}
-            />
-            {/*<Controller*/}
-            {/*  control={control}*/}
-            {/*  name="DOB"*/}
-            {/*  defaultValue={new Date()}*/}
-            {/*  render={({ field: { onChange, value }} }) => (*/}
-            {/*    <LocalizationProvider dateAdapter={AdapterDayjs}>*/}
-            {/*      <DateTimePicker*/}
-            {/*        value={value ? new Date(value) : null}*/}
-            {/*        onChange={(value) => {*/}
-            {/*          field.onChange(value);*/}
-            {/*          setDobvalue(value);*/}
-            {/*        }}*/}
-            {/*        id="DOB"*/}
-            {/*        format="YYYY-MM-DD"*/}
-            {/*        label={"Date of Bearth"}*/}
-            {/*      />*/}
-            {/*    </LocalizationProvider>*/}
-            {/*  )}*/}
-            {/*/>*/}
-            <DateTimePicker
-              defaultValue={null}
-              label="Fecha Llegada"
-              {...register('arrival', { valueAsDate: true })}
-              onChange={(date: Date) => setArrivalDate(date)}
-            />
-          </LocalizationProvider>
-        </div>
-
-        <div>
-          <InputLabel id="demo-simple-select-label">Total</InputLabel>
           <TextField
             id="outlined-multiline-flexible-2"
-            type="number"
-            defaultValue={0}
-            startAdornment={<InputAdornment position="start">$</InputAdornment>}
-            {...register('totalAmount')}
-            error={!!errors.totalAmount}
+            placeholder="Lugar salida"
+            {...register('origin')}
+            error={!!errors.origin}
           />
           <Typography variant="inherit" color="textSecondary">
-            {errors.totalAmount?.message}
+            {errors.origin?.message}
           </Typography>
-        </div>
+
+          <TextField
+            id="outlined-multiline-flexible-2"
+            placeholder="Lugar llegada"
+            {...register('destiny')}
+            error={!!errors.destiny}
+          />
+          <Typography variant="inherit" color="textSecondary">
+            {errors.destiny?.message}
+          </Typography>
+
+          <div>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DateTimePicker
+                defaultValue={null}
+                label="Fecha Salida"
+                {...register('pickUp', {valueAsDate: true})}
+              />
+              {/*<Controller*/}
+              {/*  control={control}*/}
+              {/*  name="DOB"*/}
+              {/*  defaultValue={new Date()}*/}
+              {/*  render={({ field: { onChange, value }} }) => (*/}
+              {/*    <LocalizationProvider dateAdapter={AdapterDayjs}>*/}
+              {/*      <DateTimePicker*/}
+              {/*        value={value ? new Date(value) : null}*/}
+              {/*        onChange={(value) => {*/}
+              {/*          field.onChange(value);*/}
+              {/*          setDobvalue(value);*/}
+              {/*        }}*/}
+              {/*        id="DOB"*/}
+              {/*        format="YYYY-MM-DD"*/}
+              {/*        label={"Date of Bearth"}*/}
+              {/*      />*/}
+              {/*    </LocalizationProvider>*/}
+              {/*  )}*/}
+              {/*/>*/}
+              <DateTimePicker
+                defaultValue={null}
+                label="Fecha Llegada"
+                {...register('arrival', {valueAsDate: true})}
+              />
+            </LocalizationProvider>
+          </div>
+
+          <div>
+            <InputLabel id="demo-simple-select-label">Total</InputLabel>
+            <OutlinedInput
+              id="outlined-multiline-flexible-2"
+              type="number"
+              defaultValue={0}
+              startAdornment={<InputAdornment position="start">$</InputAdornment>}
+              {...register('totalAmount')}
+              error={!!errors.totalAmount}
+            />
+            <Typography variant="inherit" color="textSecondary">
+              {errors.totalAmount?.message}
+            </Typography>
+          </div>
+        </form>
       </Box>
 
       <Box sx={{my: 2}}>

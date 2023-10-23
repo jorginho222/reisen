@@ -1,13 +1,8 @@
-import React, {useCallback, useState} from "react";
-import {useForm} from "react-hook-form";
+import {useState} from "react";
 import {useConveyance} from "../store/conveyanceStore.tsx";
-import * as Yup from 'yup'
-import {yupResolver} from "@hookform/resolvers/yup";
 import {ConveyanceTypes} from "../types/conveyance/ConveyanceTypes.ts";
-import {BaseConveyanceRequest} from "../interfaces/Conveyance/BaseConveyanceRequest.ts";
-import {Box, Button, Card, Grid, Typography} from "@mui/material";
+import {Box, Card, Grid, Typography} from "@mui/material";
 import {ConveyanceForm} from "../components/Conveyance/ConveyanceForm.tsx";
-import {v4 as uuidV4} from "uuid";
 import {TravelTicketRequest} from "../interfaces/Conveyance/TravelTicketRequest.ts";
 import {OwnVehicleRequest} from "../interfaces/Conveyance/OwnVehicleRequest.ts";
 import {CarRentalRequest} from "../interfaces/Conveyance/CarRentalRequest.ts";
@@ -15,46 +10,24 @@ import {ConveyanceRequest} from "../interfaces/Conveyance/ConveyanceRequest.ts";
 
 export function ConveyanceBoard() {
   const [index, setIndex] = useState<number>(-1)
-  const conveyanceList: ConveyanceRequest[] = useConveyance(state => state.ownVehicleConveyances)
-  const ownVehicleConveyances: () => OwnVehicleRequest[] = useCallback(() => {
-    return conveyanceList.filter(conveyance => conveyance.type === ConveyanceTypes.OwnVehicle)
-  }, [conveyanceList])
-  const ticketConveyances: () => TravelTicketRequest[] = useCallback(() => {
-    return conveyanceList.filter(conveyance => conveyance.type === ConveyanceTypes.Ticket)
-  }, [conveyanceList])
-  const carRentalConveyances: () => CarRentalRequest[] = useCallback(() => {
-    return conveyanceList.filter(conveyance => conveyance.type === ConveyanceTypes.CarRental)
-  }, [conveyanceList])
+  const ownVehicleConveyances: OwnVehicleRequest[] = useConveyance(state => state.ownVehicleConveyances)
+  const ticketConveyances: TravelTicketRequest[] = useConveyance(state => state.ticketConveyances)
+  const carRentalConveyances: CarRentalRequest[] = useConveyance(state => state.carRentalConveyances)
 
-  const baseValidationSchema = {
-    type: Yup.string().required('El tipo de transporte es requerido'),
-    totalAmount: Yup.number().required('El monto total es requerido').min(1),
-    media: Yup.string().required('El medio de transporte es requerido'),
-    origin: Yup.string().required('El lugar de salida es requerido'),
-    destiny: Yup.string().required('El lugar de llegada es requerido'),
-    // pickUp: Yup.date().required(),
-    // departure: Yup.date().required(),
-    // arrival: Yup.date().required(),
-    // devolution: Yup.date().required(),
-  }
-
-  const {register, reset, setValue, handleSubmit, formState: {errors}} = useForm<ConveyanceRequest>({
-    resolver: yupResolver()
-  })
-
-  const createConveyance = (conveyance: ConveyanceRequest) => {
-    conveyance.id = uuidV4()
-    console.log(conveyance)
-    index.valueOf() > -1
-      ? updateConveyance(conveyance, index)
-      : addConveyance(conveyance)
-
-    reset()
-    setIndex(-1)
-  }
+  // const baseValidationSchema = {
+  //   type: Yup.string().required('El tipo de transporte es requerido'),
+  //   totalAmount: Yup.number().required('El monto total es requerido').min(1),
+  //   media: Yup.string().required('El medio de transporte es requerido'),
+  //   origin: Yup.string().required('El lugar de salida es requerido'),
+  //   destiny: Yup.string().required('El lugar de llegada es requerido'),
+  //   // pickUp: Yup.date().required(),
+  //   // departure: Yup.date().required(),
+  //   // arrival: Yup.date().required(),
+  //   // devolution: Yup.date().required(),
+  // }
 
   const editConveyance = (conveyance: ConveyanceRequest) => {
-    setIndex(conveyanceList.indexOf(conveyance))
+    setIndex(ownVehicleConveyances.indexOf(conveyance))
     setValue('type', conveyance.type)
 
     switch (conveyance.type) {
@@ -90,7 +63,7 @@ export function ConveyanceBoard() {
   }
 
   const deleteConveyance = (conveyance: ConveyanceRequest) => {
-    setIndex(conveyanceList.indexOf(conveyance))
+    setIndex(ownVehicleConveyances.indexOf(conveyance))
     removeConveyance(conveyance, index)
     setIndex(-1)
   }
@@ -109,7 +82,7 @@ export function ConveyanceBoard() {
             </Typography>
             <Box sx={{mt: 2}}>
               <ul>
-                {ownVehicleConveyances().map(conveyance => (
+                {ownVehicleConveyances.map(conveyance => (
                   <li key={conveyance.id}>
                     {conveyance.origin}
                   </li>
@@ -125,7 +98,7 @@ export function ConveyanceBoard() {
             </Typography>
             <Box sx={{mt: 2}}>
               <ul>
-                {ticketConveyances().map(conveyance => (
+                {ticketConveyances.map(conveyance => (
                   <li key={conveyance.id}>
                     {conveyance.origin}
                   </li>
@@ -141,7 +114,7 @@ export function ConveyanceBoard() {
             </Typography>
             <Box sx={{mt: 2}}>
               <ul>
-                {carRentalConveyances().map(conveyance => (
+                {carRentalConveyances.map(conveyance => (
                   <li key={conveyance.id}>
                     {conveyance.place}
                   </li>
@@ -152,9 +125,7 @@ export function ConveyanceBoard() {
         </Grid>
       </Grid>
       <Card  sx={{mt: 2}}>
-        <form onSubmit={handleSubmit(createConveyance)}>
-          <ConveyanceForm resetIndex={() => setIndex(-1)} index={index} />
-        </form>
+        <ConveyanceForm resetIndex={() => setIndex(-1)} index={index} />
       </Card>
     </>
   )

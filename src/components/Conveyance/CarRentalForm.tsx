@@ -1,7 +1,6 @@
 import {DateTimePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
-import {Box, Button, InputAdornment, InputLabel, TextField, Typography} from "@mui/material";
-import React from "react";
+import {Box, Button, InputAdornment, InputLabel, OutlinedInput, TextField, Typography} from "@mui/material";
 interface CarRentalFormProps {
   resetIndex: (index: number) => void,
   index: number,
@@ -39,7 +38,7 @@ export function CarRentalForm({resetIndex, index}: CarRentalFormProps) {
         />
         <div>
           <InputLabel id="demo-simple-select-label">Total</InputLabel>
-          <TextField
+          <OutlinedInput
             id="outlined-multiline-flexible-2"
             type="number"
             defaultValue={0}
